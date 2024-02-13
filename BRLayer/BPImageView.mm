@@ -19,7 +19,7 @@ namespace ns_BPImageView {
         
         os_unfair_lock_lock(lock);
         
-        auto blocks = reinterpret_cast<NSMutableArray *>(threadDictionary[@"blocks"]);
+        auto blocks = static_cast<NSMutableArray *>(threadDictionary[@"blocks"]);
         
         [blocks enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             ((void (^)())(obj))();
