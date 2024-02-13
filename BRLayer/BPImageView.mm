@@ -110,7 +110,7 @@ __attribute__((objc_direct_members))
 + (void)runRenderBlock:(void (^)())block __attribute__((objc_direct)) {
     NSThread *renderThread = self.renderThread;
     NSMutableDictionary *threadDictionary = renderThread.threadDictionary;
-    os_unfair_lock *lock = reinterpret_cast<os_unfair_lock *>(reinterpret_cast<NSValue *>(threadDictionary[@"lock"]).pointerValue);
+    os_unfair_lock *lock = reinterpret_cast<os_unfair_lock *>(static_cast<NSValue *>(threadDictionary[@"lock"]).pointerValue);
     
     os_unfair_lock_lock(lock);
     
