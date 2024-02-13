@@ -15,7 +15,7 @@ namespace ns_BPImageView {
     void performCallout(void *info) {
         NSThread *renderThread = NSThread.currentThread;
         NSMutableDictionary *threadDictionary = renderThread.threadDictionary;
-        os_unfair_lock *lock = reinterpret_cast<os_unfair_lock *>(reinterpret_cast<NSValue *>(threadDictionary[@"lock"]).pointerValue);
+        os_unfair_lock *lock = reinterpret_cast<os_unfair_lock *>(static_cast<NSValue *>(threadDictionary[@"lock"]).pointerValue);
         
         os_unfair_lock_lock(lock);
         
