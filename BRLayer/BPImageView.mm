@@ -57,7 +57,7 @@ __attribute__((objc_direct_members))
             
             CFRunLoopSourceContext context = {
                 0,
-                nil,
+                nil, // TODO: threadDictionary를 대체할 수 있을듯
                 NULL,
                 NULL,
                 NULL,
