@@ -43,6 +43,7 @@
 		4F9519332B7BA3AF005ADB80 /* _BPImageViewLayerDelegate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = _BPImageViewLayerDelegate.hpp; sourceTree = "<group>"; };
 		4F9519342B7BA3AF005ADB80 /* _BPImageViewLayerDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = _BPImageViewLayerDelegate.mm; sourceTree = "<group>"; };
 		4F9519362B7BA8AF005ADB80 /* image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image.png; sourceTree = "<group>"; };
+		4F9519382B7BC34A005ADB80 /* BRLayer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BRLayer.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +81,7 @@
 		4F95190B2B7BA0D7005ADB80 /* BRLayer */ = {
 			isa = PBXGroup;
 			children = (
+				4F9519382B7BC34A005ADB80 /* BRLayer.entitlements */,
 				4F95190C2B7BA0D7005ADB80 /* AppDelegate.hpp */,
 				4F95190D2B7BA0D7005ADB80 /* AppDelegate.mm */,
 				4F95190F2B7BA0D7005ADB80 /* SceneDelegate.hpp */,
@@ -324,6 +326,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BRLayer/BRLayer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = P53D29U9LJ;
@@ -340,6 +343,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pookjw.BRLayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -350,6 +355,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BRLayer/BRLayer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = P53D29U9LJ;
@@ -366,6 +372,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pookjw.BRLayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

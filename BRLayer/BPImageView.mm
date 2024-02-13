@@ -36,6 +36,7 @@ __attribute__((objc_direct_members))
 @property (copy, readonly, nonatomic) NSURL *url;
 @property (retain, readonly, nonatomic) CALayer *sublayer;
 @property (retain, readonly, nonatomic) _BPImageViewLayerDelegate *delegate;
+@property (retain, readonly, nonatomic) id<UITraitChangeRegistration> displayScaleReg;
 @end
 
 @implementation BPImageView
@@ -150,6 +151,11 @@ __attribute__((objc_direct_members))
         sublayer.delegate = self.delegate;
         
         [layer addSublayer:sublayer];
+        
+        sublayer.contentsScale = self.traitCollection.displayScale;
+        _displayScaleReg = [[self registerForTraitChanges:@[UITraitDisplayScale.class] withHandler:^(BPImageView * _Nonnull traitEnvironment, UITraitCollection * _Nonnull previousCollection) {
+            sublayer.contentsScale = traitEnvironment.traitCollection.displayScale;
+        }] retain];
     }
     
     return self;
@@ -159,6 +165,7 @@ __attribute__((objc_direct_members))
     [_url release];
     [_sublayer release];
     [_delegate release];
+    [_displayScaleReg release];
     [super dealloc];
 }
 
