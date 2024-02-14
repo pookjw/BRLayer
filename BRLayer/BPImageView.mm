@@ -13,13 +13,12 @@
 
 namespace ns_BPImageView {
     void performCallout(void *info) {
-        NSThread *renderThread = NSThread.currentThread;
-        NSMutableDictionary *threadDictionary = renderThread.threadDictionary;
-        os_unfair_lock *lock = reinterpret_cast<os_unfair_lock *>(static_cast<NSValue *>(threadDictionary[@"lock"]).pointerValue);
+        auto dictionary = static_cast<NSMutableDictionary *>(info);
+        os_unfair_lock *lock = reinterpret_cast<os_unfair_lock *>(static_cast<NSValue *>(dictionary[@"lock"]).pointerValue);
         
         os_unfair_lock_lock(lock);
         
-        auto blocks = static_cast<NSMutableArray *>(threadDictionary[@"blocks"]);
+        auto blocks = static_cast<NSMutableArray *>(dictionary[@"blocks"]);
         
         [blocks enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             ((void (^)())(obj))();
@@ -47,17 +46,21 @@ __attribute__((objc_direct_members))
 + (NSThread *)renderThread {
     static dispatch_once_t onceToken;
     static NSThread *renderThread;
+    static NSMutableDictionary *dictionary;
     static os_unfair_lock lock;
     
     dispatch_once(&onceToken, ^{
+        dictionary = [NSMutableDictionary new];
         lock = OS_UNFAIR_LOCK_INIT;
+        
+        dictionary[@"lock"] = [NSValue valueWithPointer:&lock];;
         
         renderThread = [[NSThread alloc] initWithBlock:^{
             NSAutoreleasePool *pool = [NSAutoreleasePool new];
             
             CFRunLoopSourceContext context = {
                 0,
-                nil, // TODO: threadDictionary를 대체할 수 있을듯
+                dictionary,
                 NULL,
                 NULL,
                 NULL,
@@ -76,17 +79,16 @@ __attribute__((objc_direct_members))
             
             os_unfair_lock_lock(&lock);
             
-            NSMutableDictionary *threadDictionary = NSThread.currentThread.threadDictionary;
-            threadDictionary[@"runLoop"] = static_cast<id>(CFRunLoopGetCurrent());
-            threadDictionary[@"source"] = static_cast<id>(source);
+            dictionary[@"runLoop"] = static_cast<id>(CFRunLoopGetCurrent());
+            dictionary[@"source"] = static_cast<id>(source);
             
-            if (NSMutableArray *blocks = threadDictionary[@"blocks"]) {
+            if (NSMutableArray *blocks = dictionary[@"blocks"]) {
                 [blocks enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                     ((void (^)())(obj))();
                 }];
                 [blocks removeAllObjects];
             } else {
-                threadDictionary[@"blocks"] = [NSMutableArray array];
+                dictionary[@"blocks"] = [NSMutableArray array];
             }
             
             os_unfair_lock_unlock(&lock);
@@ -98,8 +100,8 @@ __attribute__((objc_direct_members))
             CFRunLoopRun();
         }];
         
+        renderThread.threadDictionary[@"dictionary"] = dictionary;
         renderThread.name = @"RenderThread";
-        renderThread.threadDictionary[@"lock"] = [NSValue valueWithPointer:&lock];
         
         [renderThread start];
     });
@@ -109,20 +111,20 @@ __attribute__((objc_direct_members))
 
 + (void)runRenderBlock:(void (^)())block __attribute__((objc_direct)) {
     NSThread *renderThread = self.renderThread;
-    NSMutableDictionary *threadDictionary = renderThread.threadDictionary;
-    os_unfair_lock *lock = reinterpret_cast<os_unfair_lock *>(static_cast<NSValue *>(threadDictionary[@"lock"]).pointerValue);
+    NSMutableDictionary *dictionary = renderThread.threadDictionary[@"dictionary"];
+    os_unfair_lock *lock = reinterpret_cast<os_unfair_lock *>(static_cast<NSValue *>(dictionary[@"lock"]).pointerValue);
     
     os_unfair_lock_lock(lock);
     
-    auto runLoop = reinterpret_cast<CFRunLoopRef _Nullable>(threadDictionary[@"runLoop"]);
-    auto source = reinterpret_cast<CFRunLoopSourceRef _Nullable>(threadDictionary[@"source"]);
+    auto runLoop = reinterpret_cast<CFRunLoopRef _Nullable>(dictionary[@"runLoop"]);
+    auto source = reinterpret_cast<CFRunLoopSourceRef _Nullable>(dictionary[@"source"]);
     
     NSMutableArray *blocks;
-    if (NSMutableArray *_blocks = threadDictionary[@"blocks"]) {
+    if (NSMutableArray *_blocks = dictionary[@"blocks"]) {
         blocks = _blocks;
     } else {
         blocks = [NSMutableArray array];
-        threadDictionary[@"blocks"] = blocks;
+        dictionary[@"blocks"] = blocks;
     }
     
     id copiedBlock = [block copy];
